@@ -128,3 +128,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+.vscode/
+.eslintignore
+*.config.js
+*.config.mjs
+package-lock.json
