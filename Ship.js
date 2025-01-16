@@ -1,22 +1,32 @@
 class Ship {
-    constructor(length) {
-        this._length = length;
-        this._numberOfHits = 0;
-    }
+  constructor(length) {
+    if (length > 5) length = 5;
+    if (length < 2) length = 2;
+    this._length = length;
+    this._numberOfHits = 0;
+  }
 
-    get length() {
-        return this._length;
-    }
-    
-    get numberOfHits() {
-        return this._numberOfHits;
-    }
+  get length() {
+    return this._length;
+  }
 
-    hit() {
-        this._numberOfHits++;
-    }
+  set length(length) {
+    this._length = length;
+  }
 
-    isSunk() {
-        return this._numberOfHits >= this._length;
+  get numberOfHits() {
+    return this._numberOfHits;
+  }
+
+  hit() {
+    if (this._numberOfHits != this._length) {
+      this._numberOfHits++;
     }
+  }
+
+  isSunk() {
+    return this._numberOfHits >= this._length;
+  }
 }
+
+export { Ship };
