@@ -1,0 +1,241 @@
+:root {
+    --header-colour: #101b3e;
+    --header-border-colour: #101b3e;
+    --main-heading-colour: #a1b9ff;
+    --font-colour: #000;
+    --main-content-bg-colour: #ebedff;
+    --footer-bg-colour: #101b3e;
+    --footer-border-colour: #101b3e;
+    --footer-text-colour: #a1b9ff;
+    --header-font-family: 'poppins';
+
+    --carrier-colour: #00027b;
+    --battleship-colour: #45b512;
+    --cruiser-colour: #cc5757;
+    --submarine-colour: #fffc4b;
+    --destroyer-colour: #ff9065;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: auto;
+}
+
+header {
+    grid-area: 1 / 1 / 2 / 2;
+    text-align: center;
+    border: 2px solid var(--header-border-colour);
+    background-color: var(--header-colour);
+}
+
+main {
+    grid-area: 2 / 1 / 3 / 2;
+    background-color: var(--main-content-bg-colour);
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+}
+
+.board-section {
+    /* display: flex;
+    align-items: center;
+    justify-content: space-evenly; */
+    flex: 1;
+}
+
+.player-form-section {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-around;
+}
+
+footer {
+    grid-area: 3 / 1 / 4 / 2;
+    text-align: center;
+    border: 2px solid var(--footer-border-colour);
+    background-color: var(--footer-bg-colour);
+}
+
+.main-heading > h1 {
+    color: var(--main-heading-colour);
+    font-family: var(--header-font-family);
+}
+
+footer > p {
+    color: var(--footer-text-colour);
+    font-family: var(--header-font-family);
+}
+
+.board {
+    display: grid;
+    grid-template-rows: repeat(10, 1fr);
+    grid-template-columns: repeat(10, 1fr);
+    border: 8px solid var(--footer-border-colour);
+    background-color: #c1d0ff;
+    border-radius: 10px;
+    padding: 6px;
+    gap: 4px;
+}
+
+.square {
+    min-width: 40px;
+    min-height: 40px;
+    border: 1px solid var(--footer-border-colour);
+    background-color: #d5e2ff;
+}
+
+.hidden {
+    display: none!important;
+}
+
+form {
+    display: grid;
+    grid-template-rows: auto 1fr 1fr 1fr;
+    gap: 40px;
+    border: 4px solid var(--footer-bg-colour);
+    border-radius: 12px;
+    background-color: #3a3b77;
+    color: #fff;
+}
+
+.name-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+select {
+    margin-left: 10px;
+    padding: 4px 8px;
+}
+
+.name-input {
+    margin-left: 20px;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 1.2em;
+    padding: 4px 8px;
+}
+
+.enter-player-button {
+    padding: 8px 30px;
+    margin-bottom: 10px;
+}
+
+.form-heading {
+    font-size: 1.6em;
+    text-align: center;
+    background-color: var(--footer-bg-colour);
+    color: #fff;
+    margin: 0;
+    padding: 16px 0px;
+    border: 2px solid var(--footer-border-colour);
+    border-radius: 10px;
+}
+
+label {
+    font-size: 1.4em;
+}
+
+select,
+.enter-player-button {
+    font-size: 1em;
+}
+
+.name-section,
+.player-type-section {
+    padding: 0px 30px;
+}
+
+.button-section {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 20px;
+}
+
+.fleet-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-bottom: 40px;
+    margin-top: 20px;
+}
+
+.fleet {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 70px;
+    border: 2px solid var(--footer-border-colour);
+    padding: 0px 30px;
+    border-radius: 8px;
+    background-color: #cdd9ff;
+}
+
+.ship {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.carrier-svg {
+    fill: var(--carrier-colour);
+}
+
+.battleship-svg {
+    fill: var(--battleship-colour);
+}
+
+.cruiser-svg {
+    fill: var(--cruiser-colour);
+}
+
+.submarine-svg {
+    fill: var(--submarine-colour);
+}
+
+.destroyer-svg {
+    fill: var(--destroyer-colour);
+}
+
+
+.board-container {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.attack-board h2,
+.fleet-board h2 {
+    text-align: center;
+    font-family: var(--header-font-family);
+}
+
+.square,
+.carrier-svg,
+.battleship-svg,
+.cruiser-svg,
+.submarine-svg,
+.destroyer-svg:hover {
+    cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--header-font-family);
+}
