@@ -47,6 +47,7 @@ main {
     align-items: center;
     justify-content: space-evenly; */
     flex: 1;
+    display: flex;
 }
 
 .player-form-section {
@@ -85,8 +86,8 @@ footer > p {
 }
 
 .square {
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 20px;
+    min-height: 20px;
     border: 1px solid var(--footer-border-colour);
     background-color: #d5e2ff;
 }
@@ -164,7 +165,7 @@ select,
 .fleet-section {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-around;
     margin-bottom: 40px;
     margin-top: 20px;
 }
@@ -173,11 +174,12 @@ select,
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    gap: 70px;
+    gap: 40px;
     border: 2px solid var(--footer-border-colour);
     padding: 0px 30px;
     border-radius: 8px;
     background-color: #cdd9ff;
+    margin-right: 0px;
 }
 
 .ship {
@@ -216,6 +218,8 @@ select,
     margin-bottom: 30px;
     align-items: center;
     justify-content: space-evenly;
+    flex-wrap: wrap;
+    flex: 1;
 }
 
 .attack-board h2,
@@ -238,4 +242,79 @@ h2,
 h3,
 h4 {
     font-family: var(--header-font-family);
+} 
+
+.carrier {
+    background-color: var(--carrier-colour);
+}
+
+.battleship {
+    background-color: var(--battleship-colour);
+}
+
+.cruiser {
+    background-color: var(--cruiser-colour);
+}
+
+.submarine {
+    background-color: var(--submarine-colour);
+}
+
+.destroyer {
+    background-color: var(--destroyer-colour);
+}
+
+.rotate {
+    margin-bottom: 30px;
+    position: relative;
+    left: 30px;
+}
+
+.rotate > div:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rotate svg:hover {
+    cursor: pointer;
+}
+
+.board-container:first-child {
+    border-right: 2px solid var(--header-colour);
+}
+
+.board-container:last-child {
+    border-left: 2px solid var(--header-colour);
+}
+
+.fleet-section > div:first-child,
+.fleet-section > div:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.disabled {
+    opacity: 0.5;
+}
+
+.player-names-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.player-one-heading,
+.player-two-heading {
+    flex: 1;
+    background-color: #bfcfff;
+    border: 0px solid black;
+    box-shadow: -1px 1px 4px black;
+}
+
+.player-one-heading > h2,
+.player-two-heading > h2 {
+    font-size: 1.8em;
+    text-align: center;
 }

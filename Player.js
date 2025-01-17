@@ -1,10 +1,17 @@
 import { GameBoard } from "./GameBoard.js";
 
 class Player {
-  constructor(playerName, playerType) {
-    this._playerName = playerName;
+  constructor(playerType) {
     this._playerType = playerType;
     this._playerBoard = new GameBoard();
+  }
+
+  get playerType() {
+    return this._playerType;
+  }
+
+  get playerBoard() {
+    return this._playerBoard;
   }
 }
 
