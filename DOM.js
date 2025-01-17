@@ -1,57 +1,135 @@
-const createDOMQueries = function () {
-  return {
-    attackBoards: document.querySelectorAll(".attack-board"),
-    fleetBoards: document.querySelectorAll(".fleet-board"),
-    playerOneBoards: document.querySelector(".player-one-boards"),
-    playerTwoBoards: document.querySelector(".player-two-boards"),
-    playerFormSection: document.querySelector(".player-form-section"),
-    boards: document.querySelectorAll(".board"),
-    ships: document.querySelectorAll(".ship"),
-    carrier: document.querySelector(".carrier-svg"),
-    battleship: document.querySelector(".battleship-svg"),
-    cruiser: document.querySelector(".cruiser-svg"),
-    submarine: document.querySelector(".submarine-svg"),
-    destroyer: document.querySelector(".destroyer-svg"),
-    squares: document.querySelectorAll(".square"),
-  };
+import { gameState } from "./main.js";
+
+const DOMQueries = {
+  get attackBoardContainers() {
+    return document.querySelectorAll(".attack-board");
+  },
+  get fleetBoardContainers() {
+    return document.querySelectorAll(".fleet-board");
+  },
+  get attackBoards() {
+    return document.querySelectorAll(".attack-board > .board");
+  },
+  get fleetBoards() {
+    return document.querySelectorAll(".fleet-board > .board");
+  },
+  get playerOneBoards() {
+    return document.querySelector(".player-one-boards");
+  },
+  get playerTwoBoards() {
+    return document.querySelector(".player-two-boards");
+  },
+  get playerFormSection() {
+    return document.querySelector(".player-form-section");
+  },
+  get boards() {
+    return document.querySelectorAll(".board");
+  },
+  get ships() {
+    return document.querySelectorAll(".ship");
+  },
+  get carriers() {
+    return document.querySelectorAll(".carrier-svg");
+  },
+  get battleships() {
+    return document.querySelectorAll(".battleship-svg");
+  },
+  get cruisers() {
+    return document.querySelectorAll(".cruiser-svg");
+  },
+  get submarines() {
+    return document.querySelectorAll(".submarine-svg");
+  },
+  get destroyers() {
+    return document.querySelectorAll(".destroyer-svg");
+  },
+  get squares() {
+    return document.querySelectorAll(".square");
+  },
+  get fleetSquares() {
+    return document.querySelectorAll(".fleet-square");
+  },
+  get attackSquares() {
+    return document.querySelectorAll(".attack-square");
+  },
+  get playerOneFleetSquares() {
+    return document.querySelectorAll(".player-one-boards .fleet-square");
+  },
+  get playerTwoFleetSquares() {
+    return document.querySelectorAll(".player-two-boards .fleet-square");
+  },
+  get rotateButtons() {
+    return document.querySelectorAll(".rotate > div:last-child");
+  },
+  get shipContainers() {
+    return document.querySelectorAll(".fleet-section > div");
+  },
+  get playerOneHeading() {
+    return document.querySelector(".player-one-heading");
+  },
+  get playerTwoHeading() {
+    return document.querySelector(".player-two-heading");
+  },
 };
 
 const DOMState = (function () {
-  let activeShip = null;
+  let playerOneActiveShip = null;
+  let playerTwoActiveShip = null;
+  let playerOneShipPlacementDirection = "vertical";
+  let playerTwoShipPlacementDirection = "vertical";
   return {
-    getActiveShip: () => activeShip,
-    setActiveShip: (ship) => (activeShip = ship),
+    getPlayerOneActiveShip: () => playerOneActiveShip,
+    setPlayerOneActiveShip: (ship) => (playerOneActiveShip = ship),
+    getPlayerTwoActiveShip: () => playerTwoActiveShip,
+    setPlayerTwoActiveShip: (ship) => (playerTwoActiveShip = ship),
+    getPlayerOneShipPlacementDirection: () => playerOneShipPlacementDirection,
+    setPlayerOneShipPlacementDirection: (direction) =>
+      (playerOneShipPlacementDirection = direction),
+    getPlayerTwoShipPlacementDirection: () => playerTwoShipPlacementDirection,
+    setPlayerTwoShipPlacementDirection: (direction) =>
+      (playerTwoShipPlacementDirection = direction),
   };
 })();
 
 const renderDOM = (function () {
-  const DOMQueries = createDOMQueries();
   function renderBoards() {
-    DOMQueries.attackBoards.forEach((attackBoard) => {
+    DOMQueries.attackBoardContainers.forEach((attackBoardContainer, index) => {
       const heading = document.createElement("h2");
       heading.textContent = "Attacks";
       const board = document.createElement("div");
       board.classList.add("board");
-      for (let i = 0; i < 100; i++) {
-        const square = document.createElement("div");
-        square.classList.add("square");
-        board.appendChild(square);
+      board.dataset.player = index + 1;
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          const square = document.createElement("div");
+          square.classList.add("square");
+          square.classList.add("attack-square");
+          square.dataset.row = i;
+          square.dataset.col = j;
+          board.appendChild(square);
+        }
       }
-      attackBoard.appendChild(heading);
-      attackBoard.appendChild(board);
+      attackBoardContainer.appendChild(heading);
+      attackBoardContainer.appendChild(board);
     });
-    DOMQueries.fleetBoards.forEach((fleetBoard) => {
+    DOMQueries.fleetBoardContainers.forEach((fleetBoardContainer, index) => {
       const heading = document.createElement("h2");
       heading.textContent = "Current Fleet";
       const board = document.createElement("div");
       board.classList.add("board");
-      for (let i = 0; i < 100; i++) {
-        const square = document.createElement("div");
-        square.classList.add("square");
-        board.appendChild(square);
+      board.dataset.player = index + 1;
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          const square = document.createElement("div");
+          square.classList.add("square");
+          square.classList.add("fleet-square");
+          square.dataset.row = i;
+          square.dataset.col = j;
+          board.appendChild(square);
+        }
       }
-      fleetBoard.appendChild(heading);
-      fleetBoard.appendChild(board);
+      fleetBoardContainer.appendChild(heading);
+      fleetBoardContainer.appendChild(board);
     });
   }
   function renderPlayerForms() {
@@ -113,7 +191,7 @@ const renderDOM = (function () {
   }
   function renderShipSVGs() {
     const parser = new DOMParser();
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 10; i++) {
       const svgString = `<svg fill="#7C98DB" width="40px" height="40px" viewBox="0 0 512 512" id="Layer_1" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
 
@@ -151,25 +229,146 @@ const renderDOM = (function () {
       switch (i) {
         case 0:
           shipSVG.classList.add("carrier-svg");
+          shipSVG.dataset.type = "carrier";
           break;
         case 1:
           shipSVG.classList.add("battleship-svg");
+          shipSVG.dataset.type = "battleship";
           break;
         case 2:
           shipSVG.classList.add("cruiser-svg");
+          shipSVG.dataset.type = "cruiser";
           break;
         case 3:
           shipSVG.classList.add("submarine-svg");
+          shipSVG.dataset.type = "submarine";
           break;
         case 4:
           shipSVG.classList.add("destroyer-svg");
+          shipSVG.dataset.type = "destroyer";
+          break;
+        case 5:
+          shipSVG.classList.add("carrier-svg");
+          shipSVG.dataset.type = "carrier";
+          break;
+        case 6:
+          shipSVG.classList.add("battleship-svg");
+          shipSVG.dataset.type = "battleship";
+          break;
+        case 7:
+          shipSVG.classList.add("cruiser-svg");
+          shipSVG.dataset.type = "cruiser";
+          break;
+        case 8:
+          shipSVG.classList.add("submarine-svg");
+          shipSVG.dataset.type = "submarine";
+          break;
+        case 9:
+          shipSVG.classList.add("destroyer-svg");
+          shipSVG.dataset.type = "destroyer";
           break;
       }
       DOMQueries.ships[i].appendChild(shipSVG);
     }
-    DOMQueries.ships.forEach((ship) => {});
   }
-  return { renderBoards, renderPlayerForms, renderShipSVGs };
+  function highlightShipPlacement(activeShip, row, col, grid) {
+    console.log("Highlighting ship placement for:", activeShip.type);
+    const playerTurn = gameState.getCurrentTurn();
+    clearHighlightedShips(activeShip);
+
+    if (playerTurn === "playerOne") {
+      if (DOMState.getPlayerOneShipPlacementDirection() === "vertical") {
+        if (activeShip.length - 1 <= row) {
+          console.log("Placing ship vertically...");
+          console.log(`${activeShip.type}`);
+          for (let i = row; i > row - activeShip.length; i--) {
+            grid[i][col].classList.add(`${activeShip.type}`);
+            console.log(grid[i][col]);
+          }
+        } else {
+          for (let i = 0; i < activeShip.length; i++) {
+            grid[i][col].classList.add(`${activeShip.type}`);
+          }
+        }
+      } else if (
+        DOMState.getPlayerOneShipPlacementDirection() === "horizontal"
+      ) {
+        if (col + activeShip.length <= 9) {
+          for (let i = col; i < col + activeShip.length; i++) {
+            grid[row][i].classList.add(`${activeShip.type}`);
+            console.log(grid[row][i]);
+          }
+        } else {
+          for (let i = 9; i > 9 - activeShip.length; i--) {
+            grid[row][i].classList.add(`${activeShip.type}`);
+          }
+        }
+      }
+    } else if (playerTurn === "playerTwo") {
+      if (DOMState.getPlayerTwoShipPlacementDirection() === "vertical") {
+        if (activeShip.length - 1 <= row) {
+          console.log("Placing ship vertically...");
+          console.log(`${activeShip.type}`);
+          for (let i = row; i > row - activeShip.length; i--) {
+            grid[i][col].classList.add(`${activeShip.type}`);
+            console.log(grid[i][col]);
+          }
+        } else {
+          for (let i = 0; i < activeShip.length; i++) {
+            grid[i][col].classList.add(`${activeShip.type}`);
+          }
+        }
+      } else if (
+        DOMState.getPlayerTwoShipPlacementDirection() === "horizontal"
+      ) {
+        if (col + activeShip.length <= 9) {
+          for (let i = col; i < col + activeShip.length; i++) {
+            grid[row][i].classList.add(`${activeShip.type}`);
+            console.log(grid[row][i]);
+          }
+        } else {
+          for (let i = 9; i > 9 - activeShip.length; i--) {
+            grid[row][i].classList.add(`${activeShip.type}`);
+          }
+        }
+      }
+    }
+  }
+  function clearHighlightedShips(activeShip) {
+    console.log("Clearing -> ", activeShip);
+    if (activeShip !== null) {
+      const currentTurn = gameState.getCurrentTurn();
+
+      if (currentTurn === "playerOne") {
+        const fleetSquares = DOMQueries.playerOneFleetSquares;
+        fleetSquares.forEach((square) => {
+          square.classList.remove(`${activeShip.type}`);
+        });
+      } else if (currentTurn === "playerTwo") {
+        const fleetSquares = DOMQueries.playerTwoFleetSquares;
+        fleetSquares.forEach((square) => {
+          square.classList.remove(`${activeShip.type}`);
+        });
+      }
+    }
+  }
+  function hidePlayerInterface(player) {
+    if (player === "playerOne") {
+      DOMQueries.playerOneHeading.classList.add("disabled");
+    } else if (player === "playerTwo") {
+      DOMQueries.playerTwoHeading.classList.add("disabled");
+      DOMQueries.playerTwoBoards.classList.add("disabled");
+      DOMQueries.shipContainers[1].classList.add("disabled");
+    }
+  }
+  return {
+    renderBoards,
+    renderPlayerForms,
+    renderShipSVGs,
+    highlightShipPlacement,
+    clearHighlightedShips,
+    hidePlayerInterface,
+  };
 })();
 
-export { createDOMQueries, renderDOM, DOMState };
+export { DOMQueries, renderDOM, DOMState };
