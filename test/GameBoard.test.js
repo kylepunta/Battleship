@@ -1,5 +1,5 @@
-import { GameBoard } from "./GameBoard.js";
-import { Ship } from "./Ship.js";
+import { GameBoard } from "../src/modules/gameBoard.js";
+import { Ship } from "../src/modules/ship.js";
 
 test("Testing GameBoard Class", () => {
   const gameBoard = new GameBoard();

@@ -1,4 +1,4 @@
-import { Ship } from "./Ship.js";
+import { Ship } from "../src/modules/ship.js";
 
 test("Testing Ship Class", () => {
   const battleship = new Ship(0);

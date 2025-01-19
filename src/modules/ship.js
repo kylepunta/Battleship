@@ -1,9 +1,18 @@
 class Ship {
-  constructor(length) {
+  constructor(type, length) {
     if (length > 5) length = 5;
     if (length < 2) length = 2;
+    this._type = type;
     this._length = length;
     this._numberOfHits = 0;
+  }
+
+  get type() {
+    return this._type;
+  }
+
+  set type(type) {
+    this._type = type;
   }
 
   get length() {

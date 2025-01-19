@@ -26,34 +26,12 @@ class GameBoard {
     return this._sunkShips;
   }
 
-  placeShip(ship, [[i1, j1], [i2, j2]]) {
-    if (i1 > i2 || j1 > j2) {
-      [[i1, j1], [i2, j2]] = [
-        [i2, j2],
-        [i1, j1],
-      ];
-    }
-
-    if (i1 === i2) {
-      if (j2 - j1 != ship.length - 1) {
-        throw new Error("Incorrect ship coordinates selected");
-      }
-    } else if (j1 === j2) {
-      if (i2 - i1 != ship.length - 1) {
-        throw new Error("Incorrect ship coordinates selected");
-      }
-    } else {
-      throw new Error("Cannot place ships diagonally on the board");
-    }
-
-    if (i1 === i2) {
-      for (let z = j1; z <= j2; z++) {
-        this._board[i1][z] = ship;
-      }
-    } else if (j1 === j2) {
-      for (let z = i1; z <= i2; z++) {
-        this._board[z][j1] = ship;
-      }
+  placeShip(ship, coordinates) {
+    for (let i = 0; i < coordinates.length; i++) {
+      console.log("placing ship...");
+      const [x, y] = coordinates[i];
+      this._board[x][y] = ship;
+      console.log(this._board[x][y]);
     }
   }
 

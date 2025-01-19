@@ -1,4 +1,4 @@
-import { Player } from "./Player.js";
+import { Player } from "../src/modules/player.js";
 
 test("Testing Player Class", () => {
   const playerOne = new Player("Kyle", "Real");

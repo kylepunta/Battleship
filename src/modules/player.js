@@ -1,4 +1,4 @@
-import { GameBoard } from "./GameBoard.js";
+import { GameBoard } from "./gameBoard.js";
 
 class Player {
   constructor(playerType) {
