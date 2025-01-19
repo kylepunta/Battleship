@@ -1,3 +1,9 @@
+:root {
+    --bg-color: #283747;
+    --border-color: #607991;
+    --board-color: #99d0c3; 
+}
+
 html, body {
     height: 100%;
     margin: 0;
@@ -56,22 +62,11 @@ main {
     height: 100%;
 }
 
-.fleet-board-container > .board,
-.attack-board-container > .board {
+.fleet-board-container .board,
+.attack-board-container .board {
     display: grid;
     grid-template-rows: repeat(10, 1fr);
     grid-template-columns: repeat(10, 1fr);
-}
-
-.fleet-board-container,
-.attack-board-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 50px 0px;
-    gap: 30px;
 }
 
 .board {
@@ -81,21 +76,36 @@ main {
 
 .fleet-board-container {
     border-right: 1px solid #fff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px 0px;
+    gap: 30px;
 }
 
 .attack-board-container {
     border-left: 1px solid #fff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 50px 0px;
+    gap: 30px;
 }
 
 .board-menu {
     display: grid;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     border: 2px solid #607991;
     border-radius: 10px;
     background-color: #242a40;
     padding: 10px;
+    margin-left: 165px;
 }
 
 .board-menu button {
@@ -110,4 +120,78 @@ main {
 .board:last-of-type {
     position: relative;
     bottom: 77px;
+}
+
+.board-and-ships {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 20px;
+}
+
+.shipyard {
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    border-radius: 10px;
+    flex-wrap: wrap;
+    width: 120px;
+    padding: 10px;
+    background-color: #242a40;
+}
+
+.shipyard > div {
+    display: flex;
+    flex-direction: column;
+    width: 40px;
+    background-color: #ccd1d1;
+    border: 1px solid #fff;
+    border-radius: 24px;
+}
+
+.carrier {
+    height: 200px;
+}
+
+.battleship {
+    height: 160px;
+}
+
+.cruiser {
+    height: 120px;
+}
+
+.submarine {
+    height: 120px;
+}
+
+.destroyer {
+    height: 80px;
+}
+
+.ship-unit {
+    border: 1px solid #fff;
+    min-width: 20px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shipyard > div > .ship-unit:first-child {
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+
+.shipyard > div > .ship-unit:last-child {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.target {
+    background-color: #aaa;
+    width: 14px;
+    height: 14px;
+    border-radius: 30px;
 }
