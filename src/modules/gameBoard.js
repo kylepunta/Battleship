@@ -1,3 +1,6 @@
+import { domQueries } from "./dom.js";
+import { states } from "./state.js";
+
 class GameBoard {
   constructor() {
     this._board = Array(10)
@@ -26,12 +29,49 @@ class GameBoard {
     return this._sunkShips;
   }
 
-  placeShip(ship, coordinates) {
-    for (let i = 0; i < coordinates.length; i++) {
-      console.log("placing ship...");
-      const [x, y] = coordinates[i];
-      this._board[x][y] = ship;
-      console.log(this._board[x][y]);
+  placeShip(ship, [row, col], unit) {
+    console.log("placing ship...");
+    console.log("Row", row);
+    console.log("Col", col);
+    const fleetSquares = domQueries.fleetSquares;
+    if (states.getRotateMode() === "vertical") {
+      switch (unit) {
+        case 0:
+          if (ship.length - 1 + row <= 9) {
+            for (let i = row; i < row + ship.length; i++) {
+              this._board[i][col] = ship;
+            }
+          }
+          break;
+        case 1:
+          if (row > 0 && row + ship.length - 2 <= 9) {
+            for (let i = row - unit; i < row - 1 + ship.length; i++) {
+              this._board[i][col] = ship;
+            }
+          }
+          break;
+        case 2:
+          if (row > 1 && row + ship.length - 3 <= 9) {
+            for (let i = row - unit; i < row - 2 + ship.length; i++) {
+              this._board[i][col] = ship;
+            }
+          }
+          break;
+        case 3:
+          if (row > 2 && row + ship.length - 4 <= 9) {
+            for (let i = row - unit; i < row - 3 + ship.length; i++) {
+              this._board[i][col] = ship;
+            }
+          }
+          break;
+        case 4:
+          if (row - (ship.length - 1) >= 0) {
+            for (let i = row; i > row - ship.length; i--) {
+              this._board[i][col] = ship;
+            }
+          }
+          break;
+      }
     }
   }
 
