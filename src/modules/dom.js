@@ -33,7 +33,14 @@ const domQueries = {
     return document.querySelectorAll(".square");
   },
   get fleetSquares() {
-    return document.querySelectorAll(".fleet-square");
+    const fleetSquares = document.querySelectorAll(".fleet-square");
+    const fleetGrid = Array.from({ length: 10 }, () => Array(10).fill(null));
+    fleetSquares.forEach((square) => {
+      const row = square.getAttribute("data-row");
+      const col = square.getAttribute("data-col");
+      fleetGrid[row][col] = square;
+    });
+    return fleetGrid;
   },
   get attackSquares() {
     return document.querySelectorAll(".attack-square");
@@ -49,6 +56,12 @@ const domQueries = {
   },
   get boardAndShips() {
     return document.querySelector(".board-and-ships");
+  },
+  get ships() {
+    return document.querySelectorAll(".shipyard > div");
+  },
+  get shipUnits() {
+    return document.querySelectorAll(".ship-unit");
   },
 };
 
@@ -120,59 +133,89 @@ const renderDOM = (function () {
     boardAndShips.appendChild(shipYard);
   }
   function createShips() {
-    const carrier = document.createElement("div");
-    carrier.classList.add("carrier");
-    const battleship = document.createElement("div");
-    battleship.classList.add("battleship");
-    const cruiser = document.createElement("div");
-    cruiser.classList.add("cruiser");
-    const submarine = document.createElement("div");
-    submarine.classList.add("submarine");
-    const destroyer = document.createElement("div");
-    destroyer.classList.add("destroyer");
+    const shipInfo = [
+      { type: "carrier", length: 5 },
+      { type: "battleship", length: 4 },
+      { type: "cruiser", length: 3 },
+      { type: "submarine", length: 3 },
+      { type: "destroyer", length: 2 },
+    ];
 
-    for (let i = 0; i < 5; i++) {
-      const shipUnit = document.createElement("div");
-      shipUnit.classList.add("ship-unit");
-      const target = document.createElement("div");
-      target.classList.add("target");
-      shipUnit.appendChild(target);
-      carrier.appendChild(shipUnit);
-    }
-    for (let i = 0; i < 4; i++) {
-      const shipUnit = document.createElement("div");
-      shipUnit.classList.add("ship-unit");
-      const target = document.createElement("div");
-      target.classList.add("target");
-      shipUnit.appendChild(target);
-      battleship.appendChild(shipUnit);
-    }
-    for (let i = 0; i < 3; i++) {
-      const shipUnit = document.createElement("div");
-      shipUnit.classList.add("ship-unit");
-      const target = document.createElement("div");
-      target.classList.add("target");
-      shipUnit.appendChild(target);
-      cruiser.appendChild(shipUnit);
-    }
-    for (let i = 0; i < 3; i++) {
-      const shipUnit = document.createElement("div");
-      shipUnit.classList.add("ship-unit");
-      const target = document.createElement("div");
-      target.classList.add("target");
-      shipUnit.appendChild(target);
-      submarine.appendChild(shipUnit);
-    }
-    for (let i = 0; i < 2; i++) {
-      const shipUnit = document.createElement("div");
-      shipUnit.classList.add("ship-unit");
-      const target = document.createElement("div");
-      target.classList.add("target");
-      shipUnit.appendChild(target);
-      destroyer.appendChild(shipUnit);
-    }
+    const ships = shipInfo.map((shipInfo) => {
+      const ship = document.createElement("div");
+      ship.classList.add(shipInfo.type);
+      ship.setAttribute("draggable", true);
+      ship.dataset.type = shipInfo.type;
+      ship.dataset.length = shipInfo.length.toString();
 
-    return [carrier, battleship, cruiser, submarine, destroyer];
+      for (let i = 0; i < shipInfo.length; i++) {
+        const shipUnit = document.createElement("div");
+        shipUnit.classList.add("ship-unit");
+        shipUnit.dataset.index = i;
+        const target = document.createElement("div");
+        target.classList.add("target");
+
+        shipUnit.appendChild(target);
+        ship.appendChild(shipUnit);
+      }
+      return ship;
+    });
+    return ships;
+  }
+  function clearBoard() {
+    const fleetSquares = domQueries.fleetSquares;
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        fleetSquares[i][j].innerHTML = "";
+      }
+    }
+  }
+  function updateBoard(board) {
+    clearBoard();
+    const fleetSquares = domQueries.fleetSquares;
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        if (board[i][j] !== null) {
+          const shipUnit = document.createElement("div");
+          const target = document.createElement("div");
+          target.classList.add("target");
+          shipUnit.appendChild(target);
+
+          const isShipStart = renderDOM.isShipStart(board, i, j);
+          const isShipEnd = renderDOM.isShipEnd(board, i, j);
+
+          if (isShipStart) {
+            shipUnit.classList.add("ship-start");
+          } else if (isShipEnd) {
+            shipUnit.classList.add("ship-end");
+          } else {
+            shipUnit.classList.add("ship-middle");
+          }
+
+          fleetSquares[i][j].appendChild(shipUnit);
+        }
+      }
+    }
+  }
+  function isShipStart(board, row, col) {
+    return (
+      (row === 0 ||
+        board[row - 1][col] === null ||
+        board[row - 1][col] !== board[row][col]) &&
+      (col === 0 ||
+        board[row][col - 1] === null ||
+        board[row][col - 1] !== board[row][col])
+    );
+  }
+  function isShipEnd(board, row, col) {
+    return (
+      (row === 9 ||
+        board[row + 1][col] === null ||
+        board[row + 1][col] !== board[row][col]) &&
+      (col === 9 ||
+        board[row][col + 1] === null ||
+        board[row][col + 1] !== board[row][col])
+    );
   }
   return {
     clearPage,
@@ -181,6 +224,10 @@ const renderDOM = (function () {
     renderBoardMenu,
     renderShipYard,
     createShips,
+    clearBoard,
+    updateBoard,
+    isShipStart,
+    isShipEnd,
   };
 })();
 
