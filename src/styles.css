@@ -17,8 +17,7 @@ body {
 }
 
 main {
-    height: 100%;
-    width: 100%;
+    flex: 1;
 }
 
 .main-menu {
@@ -29,6 +28,8 @@ main {
     padding: 10px 120px 56px 120px;
     background-color: #1b2631;
     color: #ccd1d1;
+    margin: 0 auto;
+    max-width: 20%;
 }
 
 .main-heading {
@@ -55,18 +56,22 @@ main {
     min-width: 40px;
     min-height: 40px;
     border: 1px solid #607991;
+    display: flex;
+    justify-content: center;
 }
 
 .boards-container {
     display: flex;
     height: 100%;
+    width: 100%;
 }
 
 .fleet-board-container .board,
 .attack-board-container .board {
     display: grid;
-    grid-template-rows: repeat(10, 1fr);
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 40px);
+    grid-template-columns: repeat(10, 40px);
+    max-height: 401px;
 }
 
 .board {
@@ -139,6 +144,9 @@ main {
     width: 120px;
     padding: 10px;
     background-color: #242a40;
+    position: relative;
+    bottom: 24px;
+    right: 20px;
 }
 
 .shipyard > div {
@@ -148,6 +156,7 @@ main {
     background-color: #ccd1d1;
     border: 1px solid #fff;
     border-radius: 24px;
+    cursor: grab;
 }
 
 .carrier {
@@ -194,4 +203,51 @@ main {
     width: 14px;
     height: 14px;
     border-radius: 30px;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.placed {
+    background-color: red!important;
+}
+
+.ship-middle {
+    z-index: 10;
+    flex: 1;
+    height: 100%;
+    background-color: #ccd1d1;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ship-start {
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    z-index: 10;
+    flex: 1;
+    height: 100%;
+    background-color: #ccd1d1;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.ship-end {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    z-index: 10;
+    flex: 1;
+    height: 88%;
+    background-color: #ccd1d1;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
