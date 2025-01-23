@@ -1,3 +1,5 @@
+import { states } from "./state.js";
+
 const domQueries = {
   get mainBody() {
     return document.querySelector("main");
@@ -63,6 +65,12 @@ const domQueries = {
   get shipUnits() {
     return document.querySelectorAll(".ship-unit");
   },
+  get playerSelection() {
+    return document.querySelector(".player-selection");
+  },
+  get computerSelection() {
+    return document.querySelector(".computer-selection");
+  },
 };
 
 const renderDOM = (function () {
@@ -94,6 +102,15 @@ const renderDOM = (function () {
     attackBoardContainer.classList.add("attack-board-container");
     const boardAndShips = document.createElement("div");
     boardAndShips.classList.add("board-and-ships");
+
+    const playerHeading = document.createElement("h2");
+    const currentTurn = states.getCurrentTurn();
+    if (currentTurn === "playerOne") {
+      playerHeading.textContent = "Player One";
+    } else {
+      playerHeading.textContent = "Player Two";
+    }
+    fleetBoardContainer.appendChild(playerHeading);
 
     boardAndShips.appendChild(createBoard("fleet"));
     attackBoardContainer.appendChild(createBoard("attack"));
@@ -192,7 +209,9 @@ const renderDOM = (function () {
             shipUnit.classList.add("ship-middle");
           }
 
-          fleetSquares[i][j].appendChild(shipUnit);
+          if (!fleetSquares[i][j].hasChildNodes()) {
+            fleetSquares[i][j].appendChild(shipUnit);
+          }
         }
       }
     }
@@ -217,6 +236,111 @@ const renderDOM = (function () {
         board[row][col + 1] !== board[row][col])
     );
   }
+  function loadPlayerSelectionPage() {
+    const parser = new DOMParser();
+    const playerAndComputer = document.createElement("div");
+    playerAndComputer.classList.add("player-and-computer-selection");
+    const player = document.createElement("div");
+    player.classList.add("player-selection");
+    const computer = document.createElement("div");
+    computer.classList.add("computer-selection");
+
+    const playerHeading = document.createElement("h2");
+    playerHeading.textContent = "Play against another player";
+    const computerHeading = document.createElement("h2");
+    computerHeading.textContent = "Play against AI";
+
+    const playerBtn = document.createElement("div");
+    playerBtn.classList.add("player-button");
+    const playerSvgString = `<svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 32 32" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+</style>
+<path d="M11.5,28H2.2c0.6-2,2.2-3.5,4.2-4.1c2.7-0.7,4.5-3.1,4.5-5.8c0-0.4-0.2-0.7-0.5-0.9C9,16.4,8.1,14.7,8,12.9
+	c0-0.7,0.5-1.4,1.2-1.6l1.1-0.4c0.4-0.1,0.7-0.5,0.7-0.9V6.8c1.8,2.5,4.4,4.2,7.3,4.9C18.1,12.1,18,12.5,18,13c0,1.8-1,3.4-2.5,4.3
+	c-0.3,0.2-0.5,0.5-0.5,0.9c0,1.7,0.8,3.3,2,4.4c1.5-0.2,2.9-0.3,4.3-0.1c-0.5-0.2-0.9-0.4-1.4-0.5c-1.6-0.4-2.7-1.7-2.9-3.2
+	c1.8-1.3,3-3.4,3-5.7c0-0.6,0.4-1,1-1c0.6,0,1-0.4,1-1V8.7c0-3.4-2.5-6.3-5.8-6.7c-2-0.2-4,0.5-5.4,2C9.8,3.9,8.9,4.2,8,4.9
+	C6.7,5.8,6,7.3,6,9v3.8c0,0,0,0.1,0,0.1c0,0,0,0.1,0,0.1c0,0,0,0.1,0,0.1c0.1,2.2,1.2,4.3,2.9,5.6c-0.2,1.6-1.4,2.9-3,3.3
+	c-3,0.8-5.2,3.1-5.8,6.1c-0.1,0.5,0,0.9,0.3,1.3C0.8,29.8,1.2,30,1.7,30h10.2C11.3,29.5,11.2,28.6,11.5,28z"/>
+<path d="M26,20c-1.2,0-2.3,0.3-3.3,1h-4.4c-1-0.7-2.1-1-3.3-1c-3.3,0-6,2.7-6,6s2.7,6,6,6c1.2,0,2.3-0.3,3.3-1h4.4
+	c1,0.7,2.1,1,3.3,1c3.3,0,6-2.7,6-6S29.3,20,26,20z M17,27h-1v1c0,0.6-0.4,1-1,1s-1-0.4-1-1v-1h-1c-0.6,0-1-0.4-1-1s0.4-1,1-1h1v-1
+	c0-0.6,0.4-1,1-1s1,0.4,1,1v1h1c0.6,0,1,0.4,1,1S17.6,27,17,27z M25.7,27.7c-0.1,0.1-0.2,0.2-0.3,0.2C25.3,28,25.1,28,25,28
+	c-0.1,0-0.1,0-0.2,0c-0.1,0-0.1,0-0.2-0.1c-0.1,0-0.1-0.1-0.2-0.1c0,0-0.1-0.1-0.1-0.1c-0.1-0.1-0.2-0.2-0.2-0.3S24,27.1,24,27
+	c0-0.3,0.1-0.5,0.3-0.7c0.3-0.3,0.7-0.4,1.1-0.2c0.1,0.1,0.2,0.1,0.3,0.2c0.2,0.2,0.3,0.4,0.3,0.7C26,27.3,25.9,27.5,25.7,27.7z
+	 M28,25.2c0,0.1,0,0.1-0.1,0.2c0,0.1,0,0.1-0.1,0.2c0,0-0.1,0.1-0.1,0.1C27.5,25.9,27.3,26,27,26c-0.1,0-0.1,0-0.2,0
+	c-0.1,0-0.1,0-0.2-0.1c-0.1,0-0.1-0.1-0.2-0.1c0,0-0.1-0.1-0.1-0.1C26.1,25.5,26,25.3,26,25c0-0.3,0.1-0.5,0.3-0.7
+	c0.4-0.4,1-0.4,1.4,0c0,0,0.1,0.1,0.1,0.1c0,0.1,0.1,0.1,0.1,0.2c0,0.1,0,0.1,0.1,0.2c0,0.1,0,0.1,0,0.2S28,25.1,28,25.2z"/>
+</svg>`;
+    const playerSvg = parser.parseFromString(
+      playerSvgString,
+      "image/svg+xml"
+    ).documentElement;
+
+    const computerBtn = document.createElement("div");
+    computerBtn.classList.add("computer-button");
+    const computerSvgString = `<svg fill="#000000" height="80px" width="80px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 512 512" xml:space="preserve">
+<g>
+	<g>
+		<polygon points="466.943,444.488 466.943,389.901 45.057,389.901 45.057,444.488 212.175,444.488 212.175,478.552 
+			169.652,478.552 169.652,512 342.346,512 342.346,478.552 299.823,478.552 299.823,444.488 		"/>
+	</g>
+</g>
+<g>
+	<g>
+		<path d="M272.724,0v78.578l10.741-4.649l24.532-65.324C297.144,4.226,285.349,1.339,272.724,0z"/>
+	</g>
+</g>
+<g>
+	<g>
+		<path d="M204.002,8.605l24.532,65.324l10.741,4.649V0C226.65,1.339,214.855,4.226,204.002,8.605z"/>
+	</g>
+</g>
+<g>
+	<g>
+		<path d="M202.213,98.984l-27.457-73.115c-6.762,5.54-12.916,11.905-18.398,19.093c-3.249,4.261-6.219,8.792-8.952,13.534
+			l28.265,60.554l-30.31,14.148l-14.443-30.941c-2.849,13.241-4.305,27.417-4.305,42.329c0,81.661,44.594,168.655,112.66,181.066
+			v-41.126h-18.539v-33.448h18.54V115.027L202.213,98.984z M189.103,207.577c-11.38,0-20.605-9.225-20.605-20.605
+			c0-11.38,9.225-20.605,20.605-20.605s20.605,9.225,20.605,20.605C209.709,198.352,200.483,207.577,189.103,207.577z"/>
+	</g>
+</g>
+<g>
+	<g>
+		<path d="M380.614,100.277l-15.366,32.921l-30.31-14.148l28.88-61.872c-2.522-4.26-5.231-8.352-8.177-12.216
+			c-5.482-7.188-11.636-13.554-18.398-19.093l-27.458,73.115l-37.062,16.043v136.051h18.54v33.448h-18.54v41.127
+			c68.065-12.412,112.66-99.405,112.66-181.066C385.383,128.922,383.753,114.087,380.614,100.277z M322.896,207.577
+			c-11.38,0-20.605-9.225-20.605-20.605c0-11.38,9.225-20.605,20.605-20.605c11.38,0,20.605,9.225,20.605,20.605
+			C343.503,198.352,334.276,207.577,322.896,207.577z"/>
+	</g>
+</g>
+<g>
+	<g>
+		<path d="M418.788,149.348c-0.904,49.23-15.766,99.245-41.09,137.92c-23.784,36.324-54.795,60.098-89.419,69.185h178.663V149.348
+			H418.788z"/>
+	</g>
+</g>
+<g>
+	<g>
+		<path d="M134.302,287.268c-25.325-38.675-40.187-88.691-41.09-137.92H45.057v207.105h178.663
+			C189.097,347.366,158.086,323.592,134.302,287.268z"/>
+	</g>
+</g>
+</svg>`;
+    const computerSvg = parser.parseFromString(
+      computerSvgString,
+      "image/svg+xml"
+    ).documentElement;
+    playerBtn.appendChild(playerSvg);
+    computerBtn.appendChild(computerSvg);
+    player.appendChild(playerHeading);
+    player.appendChild(playerBtn);
+    computer.appendChild(computerHeading);
+    computer.appendChild(computerBtn);
+    playerAndComputer.appendChild(player);
+    playerAndComputer.appendChild(computer);
+    mainBody.appendChild(playerAndComputer);
+  }
   return {
     clearPage,
     createBoard,
@@ -228,6 +352,7 @@ const renderDOM = (function () {
     updateBoard,
     isShipStart,
     isShipEnd,
+    loadPlayerSelectionPage,
   };
 })();
 
