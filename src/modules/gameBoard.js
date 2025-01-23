@@ -33,46 +33,76 @@ class GameBoard {
     console.log("placing ship...");
     console.log("Row", row);
     console.log("Col", col);
-    const fleetSquares = domQueries.fleetSquares;
     if (states.getRotateMode() === "vertical") {
       switch (unit) {
         case 0:
           if (ship.length - 1 + row <= 9) {
             for (let i = row; i < row + ship.length; i++) {
+              if (this._board[i][col] !== null) {
+                return false;
+              }
+            }
+            for (let i = row; i < row + ship.length; i++) {
               this._board[i][col] = ship;
             }
+            return true;
           }
           break;
         case 1:
           if (row > 0 && row + ship.length - 2 <= 9) {
             for (let i = row - unit; i < row - 1 + ship.length; i++) {
+              if (this._board[i][col] !== null) {
+                return false;
+              }
+            }
+            for (let i = row - unit; i < row - 1 + ship.length; i++) {
               this._board[i][col] = ship;
             }
+            return true;
           }
           break;
         case 2:
           if (row > 1 && row + ship.length - 3 <= 9) {
             for (let i = row - unit; i < row - 2 + ship.length; i++) {
+              if (this._board[i][col] !== null) {
+                return false;
+              }
+            }
+            for (let i = row - unit; i < row - 2 + ship.length; i++) {
               this._board[i][col] = ship;
             }
+            return true;
           }
           break;
         case 3:
           if (row > 2 && row + ship.length - 4 <= 9) {
             for (let i = row - unit; i < row - 3 + ship.length; i++) {
+              if (this._board[i][col] !== null) {
+                return false;
+              }
+            }
+            for (let i = row - unit; i < row - 3 + ship.length; i++) {
               this._board[i][col] = ship;
             }
+            return true;
           }
           break;
         case 4:
           if (row - (ship.length - 1) >= 0) {
             for (let i = row; i > row - ship.length; i--) {
+              if (this._board[i][col] !== null) {
+                return false;
+              }
+            }
+            for (let i = row; i > row - ship.length; i--) {
               this._board[i][col] = ship;
             }
+            return true;
           }
           break;
       }
     }
+    return false;
   }
 
   receiveAttack([i, j]) {
@@ -97,6 +127,14 @@ class GameBoard {
       }
     }
     return true;
+  }
+
+  clearBoard() {
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        this._board[i][j] = null;
+      }
+    }
   }
 }
 
