@@ -8,6 +8,7 @@ const states = (() => {
     droppedPiece: null,
     rotateMode: "vertical",
     unitClicked: null,
+    shipsPlaced: 0,
   };
   const gameState = {
     playerOne: null,
@@ -19,6 +20,8 @@ const states = (() => {
     playerTwoFleetBoard: null,
     playerTwoAttackBoard: null,
     currentTurn: "playerOne",
+    playerOneReady: false,
+    playerTwoReady: false,
   };
   return {
     domState,
@@ -51,6 +54,12 @@ const states = (() => {
     setRotateMode: (mode) => (domState.rotateMode = mode),
     getUnitClicked: () => domState.unitClicked,
     setUnitClicked: (unit) => (domState.unitClicked = unit),
+    getPlayerOneReady: () => gameState.playerOneReady,
+    setPlayerOneReady: (status) => (gameState.playerOneReady = status),
+    getPlayerTwoReady: () => gameState.playerTwoReady,
+    setPlayerTwoReady: (status) => (gameState.playerTwoReady = status),
+    getShipsPlaced: () => domState.shipsPlaced,
+    increaseShipsPlaced: () => domState.shipsPlaced++,
   };
 })();
 
