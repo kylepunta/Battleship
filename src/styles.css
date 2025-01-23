@@ -18,6 +18,10 @@ body {
 
 main {
     flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .main-menu {
@@ -25,15 +29,17 @@ main {
     gap: 10px;
     border: 2px solid #ccd1d1;
     border-radius: 30px;
-    padding: 10px 120px 56px 120px;
+    padding: 10px 80px 56px 80px;
     background-color: #1b2631;
     color: #ccd1d1;
     margin: 0 auto;
-    max-width: 20%;
+    max-width: 400px;
+    width: 100%;
 }
 
 .main-heading {
     font-size: 30px;
+    text-align: center;
 }
 
 .new-game,
@@ -45,6 +51,13 @@ main {
     border-radius: 10px;
     padding: 0px 10px;
     background-color: #2a3642;
+}
+
+.new-game:hover,
+.rules:hover,
+.settings:hover {
+    cursor: pointer;
+    background-color: #0f1922;
 }
 
 .main-menu h3 {
@@ -250,4 +263,61 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.clear-button:hover,
+.confirm-button:hover {
+    cursor: pointer;
+    background-color: #395065;
+}
+
+.player-and-computer-selection {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.player-button,
+.computer-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-button svg,
+.computer-button svg {
+    width: 80px;
+    height: 80px;
+    fill: #ccd1d1;
+}
+
+.player-and-computer-selection > div {
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    background-color: var(--bg-color);
+    min-height: 400px;
+    max-width: 300px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    box-sizing: border-box;
+    padding: 10px 52px;
+    background-color: #1b2631;
+}
+
+.player-and-computer-selection h2 {
+    color: #ccd1d1;
+    text-align: center;
+}
+
+.player-and-computer-selection > div:hover {
+    cursor: pointer;
+    background-color: #0f1922;
+    box-shadow: 0px 1px 6px #0f1922;
+}
+
+.fleet-board-container > h2 {
+    color: #ccd1d1;
+    font-size: 2em;
+    position: relative;
+    bottom: 30px;
 }
