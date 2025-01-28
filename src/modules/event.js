@@ -44,18 +44,28 @@ const addEventListeners = (function () {
 
           switch (states.getCurrentTurn()) {
             case "playerOne":
-              const ship = new Ship(shipType, parseInt(shipLength));
-              const unit = states.getUnitClicked();
-              const placedShip = states
+              const playerOneShip = new Ship(shipType, parseInt(shipLength));
+              const playerOneUnit = states.getUnitClicked();
+              const playerOnePlacedShip = states
                 .getPlayerOneGameBoard()
-                .placeShip(ship, [row, col], unit);
-              if (placedShip) {
+                .placeShip(playerOneShip, [row, col], playerOneUnit);
+              if (playerOnePlacedShip) {
                 states.increaseShipsPlaced();
                 states.getDraggedPiece().classList.add("disabled");
                 renderDOM.updateBoard(states.getPlayerOneFleetBoard());
               }
               break;
             case "playerTwo":
+              const playerTwoShip = new Ship(shipType, parseInt(shipLength));
+              const playerTwoUnit = states.getUnitClicked();
+              const playerTwoPlacedShip = states
+                .getPlayerTwoGameBoard()
+                .placeShip(playerTwoShip, [row, col], playerTwoUnit);
+              if (playerTwoPlacedShip) {
+                states.increaseShipsPlaced();
+                states.getDraggedPiece().classList.add("disabled");
+                renderDOM.updateBoard(states.getPlayerTwoFleetBoard());
+              }
               break;
           }
         });
@@ -71,23 +81,36 @@ const addEventListeners = (function () {
           break;
       }
       renderDOM.clearBoard();
+      states.resetShipsPlaced();
       domQueries.ships.forEach((ship) => {
         ship.classList.remove("disabled");
       });
     });
     domQueries.confirmBtn.addEventListener("click", () => {
       if (states.getShipsPlaced() === 5) {
+        console.log("Confirming...");
         let currentTurn =
           states.getCurrentTurn() === "playerOne" ? "playerTwo" : "playerOne";
         states.setCurrentTurn(currentTurn);
+        console.log("Current Turn:", states.getCurrentTurn());
         switch (currentTurn) {
           case "playerOne":
             if (states.getPlayerOneReady() === true) {
+              console.log("Clearing page...");
               renderDOM.clearPage();
+              console.table(states.getPlayerOneFleetBoard());
+              console.table(states.getPlayerTwoFleetBoard());
+              renderDOM.loadGame();
             }
             break;
           case "playerTwo":
             states.setPlayerOneReady(true);
+            renderDOM.clearBoard();
+            renderDOM.renderPlayerHeading();
+            states.resetShipsPlaced();
+            domQueries.ships.forEach((ship) => {
+              ship.classList.remove("disabled");
+            });
             break;
         }
       }
@@ -120,6 +143,7 @@ const addEventListeners = (function () {
       states.setPlayerTwoAttackBoard(playerTwo.playerBoard.missedAttacks);
       renderDOM.clearPage();
       renderDOM.renderBoards();
+      renderDOM.renderPlayerHeading();
       renderDOM.renderBoardMenu();
       renderDOM.renderShipYard();
       addGameEventListeners();
@@ -138,6 +162,7 @@ const addEventListeners = (function () {
       states.setPlayerTwoAttackBoard(playerTwo.playerBoard.missedAttacks);
       renderDOM.clearPage();
       renderDOM.renderBoards();
+      renderDOM.renderPlayerHeading();
       renderDOM.renderBoardMenu();
       renderDOM.renderShipYard();
       addGameEventListeners();
