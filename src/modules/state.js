@@ -60,6 +60,7 @@ const states = (() => {
     setPlayerTwoReady: (status) => (gameState.playerTwoReady = status),
     getShipsPlaced: () => domState.shipsPlaced,
     increaseShipsPlaced: () => domState.shipsPlaced++,
+    resetShipsPlaced: () => (domState.shipsPlaced = 0),
   };
 })();
 
