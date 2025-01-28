@@ -71,6 +71,9 @@ const domQueries = {
   get computerSelection() {
     return document.querySelector(".computer-selection");
   },
+  get boardNameHeading() {
+    return document.querySelector(".board-name-heading");
+  },
 };
 
 const renderDOM = (function () {
@@ -93,6 +96,17 @@ const renderDOM = (function () {
     }
     return board;
   }
+  function renderPlayerHeading() {
+    const playerHeading = document.createElement("h2");
+    const currentTurn = states.getCurrentTurn();
+    if (currentTurn === "playerOne") {
+      playerHeading.textContent = "Player One";
+    } else {
+      playerHeading.textContent = "Player Two";
+    }
+    domQueries.boardNameHeading.innerHTML = "";
+    domQueries.boardNameHeading.appendChild(playerHeading);
+  }
   function renderBoards() {
     const boardsContainer = document.createElement("div");
     boardsContainer.classList.add("boards-container");
@@ -103,18 +117,19 @@ const renderDOM = (function () {
     const boardAndShips = document.createElement("div");
     boardAndShips.classList.add("board-and-ships");
 
-    const playerHeading = document.createElement("h2");
-    const currentTurn = states.getCurrentTurn();
-    if (currentTurn === "playerOne") {
-      playerHeading.textContent = "Player One";
-    } else {
-      playerHeading.textContent = "Player Two";
-    }
-    fleetBoardContainer.appendChild(playerHeading);
+    const nameHeading = document.createElement("div");
+    nameHeading.classList.add("board-name-heading");
+    const attackHeadingContainer = document.createElement("div");
+    const attackHeading = document.createElement("h2");
+    attackHeading.textContent = "Attack Board";
+    attackHeading.classList.add("attack-board-heading");
 
     boardAndShips.appendChild(createBoard("fleet"));
+    attackHeadingContainer.appendChild(attackHeading);
+    attackBoardContainer.appendChild(attackHeading);
     attackBoardContainer.appendChild(createBoard("attack"));
 
+    fleetBoardContainer.appendChild(nameHeading);
     fleetBoardContainer.appendChild(boardAndShips);
     boardsContainer.appendChild(fleetBoardContainer);
     boardsContainer.appendChild(attackBoardContainer);
@@ -341,6 +356,11 @@ const renderDOM = (function () {
     playerAndComputer.appendChild(computer);
     mainBody.appendChild(playerAndComputer);
   }
+  function loadGame() {
+    renderDOM.renderBoards();
+    renderDOM.renderPlayerHeading();
+    renderDOM.updateBoard(states.getPlayerOneFleetBoard());
+  }
   return {
     clearPage,
     createBoard,
@@ -353,6 +373,8 @@ const renderDOM = (function () {
     isShipStart,
     isShipEnd,
     loadPlayerSelectionPage,
+    loadGame,
+    renderPlayerHeading,
   };
 })();
 
