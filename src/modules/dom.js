@@ -479,7 +479,7 @@ const renderDOM = (function () {
       domQueries.attackMessage.textContent = "Miss";
     } else if (message === "sunk") {
       domQueries.attackMessageContainer.classList.add("sunk-message");
-      domQueries.attackMessage.textContent = "Ship Sunk!";
+      domQueries.attackMessage.textContent = "Sunk!";
     }
   }
   function endGame() {
