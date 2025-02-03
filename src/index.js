@@ -1,4 +1,5 @@
 import "./styles.css";
+console.log("CSS File Loaded!");
 import { domQueries, renderDOM } from "./modules/dom.js";
 import { addEventListeners } from "./modules/event.js";
 import { Player } from "./modules/player.js";
