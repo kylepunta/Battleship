@@ -132,8 +132,10 @@ const renderDOM = (function () {
     const currentTurn = states.getCurrentTurn();
     if (currentTurn === "playerOne") {
       playerHeading.textContent = "Player One";
-    } else {
+    } else if (currentTurn === "playerTwo") {
       playerHeading.textContent = "Player Two";
+    } else if (states.getGameMode() === "computer") {
+      playerHeading.textContent = "Computer";
     }
     domQueries.boardNameHeading.innerHTML = "";
     domQueries.boardNameHeading.appendChild(playerHeading);
@@ -448,63 +450,15 @@ const renderDOM = (function () {
       for (let j = 0; j < 10; j++) {
         attackSquares[i][j].classList.remove("hit");
         attackSquares[i][j].classList.remove("miss");
+        attackSquares[i][j].classList.remove("temp-disabled");
         if (board[i][j] === true) {
           attackSquares[i][j].classList.add("hit");
+          attackSquares[i][j].classList.add("temp-disabled");
         } else if (board[i][j] === false) {
           attackSquares[i][j].classList.add("miss");
+          attackSquares[i][j].classList.add("temp-disabled");
         }
       }
-    }
-  }
-  function randomizeShips(board) {
-    console.log("Randomizing ships on the board...");
-
-    const ships = [];
-    let direction = "";
-    for (let i = 0; i < 5; i++) {
-      const randomNumber = Math.floor(Math.random() * 2);
-      if (randomNumber === 0) {
-        direction = "vertical";
-      } else if (randomNumber === 1) {
-        direction = "horizontal";
-      }
-      console.log(direction);
-      switch (i) {
-        case 0:
-          const carrier = new Ship("carrier", 5, direction);
-          ships.push(carrier);
-          break;
-        case 1:
-          const battleship = new Ship("battleship", 4, direction);
-          ships.push(battleship);
-          break;
-        case 2:
-          const cruiser = new Ship("cruiser", 3, direction);
-          ships.push(cruiser);
-          break;
-        case 3:
-          const submarine = new Ship("submarine", 3, direction);
-          ships.push(submarine);
-          break;
-        case 4:
-          const destroyer = new Ship("destroyer", 2, direction);
-          ships.push(destroyer);
-          break;
-      }
-    }
-
-    while (states.getShipsPlaced() < 5) {
-      let row = Math.floor(Math.random() * 10);
-      let col = Math.floor(Math.random() * 10);
-
-      let currentShip = ships.shift();
-      let shipPlaced = board.placeShip(currentShip, [row, col], 0);
-      while (!shipPlaced) {
-        row = Math.floor(Math.random() * 10);
-        col = Math.floor(Math.random() * 10);
-        shipPlaced = board.placeShip(currentShip, [row, col], 0);
-      }
-      states.increaseShipsPlaced();
     }
   }
   function renderAttackMessage(isHit) {
@@ -555,7 +509,6 @@ const renderDOM = (function () {
     loadGame,
     renderPlayerHeading,
     updateAttackBoard,
-    randomizeShips,
   };
 })();
 

@@ -22,6 +22,9 @@ const states = (() => {
     currentTurn: "playerOne",
     playerOneReady: false,
     playerTwoReady: false,
+    gameOver: false,
+    gameMode: null,
+    computerHits: [],
   };
   return {
     domState,
@@ -61,6 +64,20 @@ const states = (() => {
     getShipsPlaced: () => domState.shipsPlaced,
     increaseShipsPlaced: () => domState.shipsPlaced++,
     resetShipsPlaced: () => (domState.shipsPlaced = 0),
+    gameOver: () => gameState.gameOver,
+    setGameOver: (status) => (gameState.gameOver = status),
+    getGameMode: () => gameState.gameMode,
+    setGameMode: (mode) => (gameState.gameMode = mode),
+    getComputerHits: () => gameState.computerHits,
+    setComputerHits: (hit) => gameState.computerHits.push(hit),
+    resetComputerHits: () => (gameState.computerHits = []),
+    checkWin: (board) => {
+      if (board.allShipsSunk()) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     resetGame: () => {
       domState.droppedPiece = null;
       domState.draggedPiece = null;
@@ -76,6 +93,9 @@ const states = (() => {
       gameState.currentTurn = "playerOne";
       gameState.playerOneReady = false;
       gameState.playerTwoReady = false;
+      gameState.gameOver = null;
+      gameState.gameMode = null;
+      gameState.computerLastHit = null;
     },
   };
 })();
