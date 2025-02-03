@@ -1,3 +1,5 @@
+import { addEventListeners } from "./event.js";
+import { Ship } from "./ship.js";
 import { states } from "./state.js";
 
 const domQueries = {
@@ -45,7 +47,14 @@ const domQueries = {
     return fleetGrid;
   },
   get attackSquares() {
-    return document.querySelectorAll(".attack-square");
+    const attackSquares = document.querySelectorAll(".attack-square");
+    const attackGrid = Array.from({ length: 10 }, () => Array(10).fill(null));
+    attackSquares.forEach((square) => {
+      const row = square.getAttribute("data-row");
+      const col = square.getAttribute("data-col");
+      attackGrid[row][col] = square;
+    });
+    return attackGrid;
   },
   get boardMenu() {
     return document.querySelector(".board-menu");
@@ -56,6 +65,12 @@ const domQueries = {
   get confirmBtn() {
     return document.querySelector(".confirm-button");
   },
+  get randomizeBtn() {
+    return document.querySelector(".random-button");
+  },
+  get rotateBtn() {
+    return document.querySelector(".rotate-button");
+  },
   get boardAndShips() {
     return document.querySelector(".board-and-ships");
   },
@@ -64,6 +79,14 @@ const domQueries = {
   },
   get shipUnits() {
     return document.querySelectorAll(".ship-unit");
+  },
+  get shipStartUnits() {
+    return document.querySelectorAll(
+      ".shipyard > div > .ship-unit:first-child"
+    );
+  },
+  get shipEndUnits() {
+    return document.querySelectorAll(".shipyard > div > .ship-unit:last-child");
   },
   get playerSelection() {
     return document.querySelector(".player-selection");
@@ -74,12 +97,20 @@ const domQueries = {
   get boardNameHeading() {
     return document.querySelector(".board-name-heading");
   },
+  get attackMessageContainer() {
+    return document.querySelector(".attack-message-container");
+  },
+  get attackMessage() {
+    return document.querySelector(".attack-message");
+  },
+  get playAgainBtn() {
+    return document.querySelector(".play-again-button");
+  },
 };
 
 const renderDOM = (function () {
-  const mainBody = document.querySelector("main");
   function clearPage() {
-    mainBody.innerHTML = "";
+    domQueries.mainBody.innerHTML = "";
   }
   function createBoard(boardType) {
     const board = document.createElement("div");
@@ -114,6 +145,7 @@ const renderDOM = (function () {
     fleetBoardContainer.classList.add("fleet-board-container");
     const attackBoardContainer = document.createElement("div");
     attackBoardContainer.classList.add("attack-board-container");
+    attackBoardContainer.classList.add("hidden");
     const boardAndShips = document.createElement("div");
     boardAndShips.classList.add("board-and-ships");
 
@@ -124,16 +156,24 @@ const renderDOM = (function () {
     attackHeading.textContent = "Attack Board";
     attackHeading.classList.add("attack-board-heading");
 
+    const attackMessageContainer = document.createElement("div");
+    const attackMessage = document.createElement("h2");
+    attackMessageContainer.classList.add("attack-message-container");
+    attackMessageContainer.classList.add("hidden");
+    attackMessage.classList.add("attack-message");
+    attackMessageContainer.appendChild(attackMessage);
+
     boardAndShips.appendChild(createBoard("fleet"));
     attackHeadingContainer.appendChild(attackHeading);
-    attackBoardContainer.appendChild(attackHeading);
+    attackBoardContainer.appendChild(attackHeadingContainer);
     attackBoardContainer.appendChild(createBoard("attack"));
+    attackBoardContainer.appendChild(attackMessageContainer);
 
     fleetBoardContainer.appendChild(nameHeading);
     fleetBoardContainer.appendChild(boardAndShips);
     boardsContainer.appendChild(fleetBoardContainer);
     boardsContainer.appendChild(attackBoardContainer);
-    mainBody.appendChild(boardsContainer);
+    domQueries.mainBody.appendChild(boardsContainer);
   }
   function renderBoardMenu() {
     const fleetBoardContainer = domQueries.fleetBoardContainer;
@@ -146,9 +186,17 @@ const renderDOM = (function () {
     const confirmBtn = document.createElement("button");
     confirmBtn.classList.add("confirm-button");
     confirmBtn.textContent = "Confirm";
+    const randomBtn = document.createElement("button");
+    randomBtn.classList.add("random-button");
+    randomBtn.textContent = "Random";
+    const rotateBtn = document.createElement("button");
+    rotateBtn.classList.add("rotate-button");
+    rotateBtn.textContent = "Rotate";
 
     boardMenu.appendChild(clearBtn);
     boardMenu.appendChild(confirmBtn);
+    boardMenu.appendChild(randomBtn);
+    boardMenu.appendChild(rotateBtn);
 
     fleetBoardContainer.appendChild(boardMenu);
   }
@@ -202,26 +250,43 @@ const renderDOM = (function () {
       }
     }
   }
-  function updateBoard(board) {
+  function updateBoard(board, attacks) {
     clearBoard();
     const fleetSquares = domQueries.fleetSquares;
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 10; j++) {
         if (board[i][j] !== null) {
+          let currentShip = board[i][j];
           const shipUnit = document.createElement("div");
           const target = document.createElement("div");
           target.classList.add("target");
           shipUnit.appendChild(target);
-
+          if (attacks !== null) {
+            if (attacks[i][j] === true) {
+              target.classList.add("target-hit");
+            }
+          }
           const isShipStart = renderDOM.isShipStart(board, i, j);
           const isShipEnd = renderDOM.isShipEnd(board, i, j);
 
           if (isShipStart) {
-            shipUnit.classList.add("ship-start");
+            if (board[i][j].direction === "vertical") {
+              shipUnit.classList.add("ship-start-vertical");
+            } else {
+              shipUnit.classList.add("ship-start-horizontal");
+            }
           } else if (isShipEnd) {
-            shipUnit.classList.add("ship-end");
+            if (board[i][j].direction === "vertical") {
+              shipUnit.classList.add("ship-end-vertical");
+            } else {
+              shipUnit.classList.add("ship-end-horizontal");
+            }
           } else {
-            shipUnit.classList.add("ship-middle");
+            if (board[i][j].direction === "vertical") {
+              shipUnit.classList.add("ship-middle-vertical");
+            } else {
+              shipUnit.classList.add("ship-middle-horizontal");
+            }
           }
 
           if (!fleetSquares[i][j].hasChildNodes()) {
@@ -354,14 +419,128 @@ const renderDOM = (function () {
     computer.appendChild(computerBtn);
     playerAndComputer.appendChild(player);
     playerAndComputer.appendChild(computer);
-    mainBody.appendChild(playerAndComputer);
+    domQueries.mainBody.appendChild(playerAndComputer);
   }
   function loadGame() {
     renderDOM.renderBoards();
     renderDOM.renderPlayerHeading();
-    renderDOM.updateBoard(states.getPlayerOneFleetBoard());
+    renderDOM.updateBoard(states.getPlayerOneFleetBoard(), null);
+    domQueries.attackBoardContainer.classList.remove("hidden");
+    addEventListeners.addAttackBoardEventListeners();
+    states.setCurrentTurn("playerOne");
+  }
+  function renderExplosion(square) {
+    square.classList.add("explosion");
+    setTimeout(() => {
+      square.classList.remove("explosion");
+    }, 1000);
+  }
+  function renderMissedAttack(square) {
+    square.classList.add("miss-animation");
+    setTimeout(() => {
+      square.classList.remove("miss-animation");
+    }, 1000);
+  }
+  function updateAttackBoard(board) {
+    const attackSquares = domQueries.attackSquares;
+
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        attackSquares[i][j].classList.remove("hit");
+        attackSquares[i][j].classList.remove("miss");
+        if (board[i][j] === true) {
+          attackSquares[i][j].classList.add("hit");
+        } else if (board[i][j] === false) {
+          attackSquares[i][j].classList.add("miss");
+        }
+      }
+    }
+  }
+  function randomizeShips(board) {
+    console.log("Randomizing ships on the board...");
+
+    const ships = [];
+    let direction = "";
+    for (let i = 0; i < 5; i++) {
+      const randomNumber = Math.floor(Math.random() * 2);
+      if (randomNumber === 0) {
+        direction = "vertical";
+      } else if (randomNumber === 1) {
+        direction = "horizontal";
+      }
+      console.log(direction);
+      switch (i) {
+        case 0:
+          const carrier = new Ship("carrier", 5, direction);
+          ships.push(carrier);
+          break;
+        case 1:
+          const battleship = new Ship("battleship", 4, direction);
+          ships.push(battleship);
+          break;
+        case 2:
+          const cruiser = new Ship("cruiser", 3, direction);
+          ships.push(cruiser);
+          break;
+        case 3:
+          const submarine = new Ship("submarine", 3, direction);
+          ships.push(submarine);
+          break;
+        case 4:
+          const destroyer = new Ship("destroyer", 2, direction);
+          ships.push(destroyer);
+          break;
+      }
+    }
+
+    while (states.getShipsPlaced() < 5) {
+      let row = Math.floor(Math.random() * 10);
+      let col = Math.floor(Math.random() * 10);
+
+      let currentShip = ships.shift();
+      let shipPlaced = board.placeShip(currentShip, [row, col], 0);
+      while (!shipPlaced) {
+        row = Math.floor(Math.random() * 10);
+        col = Math.floor(Math.random() * 10);
+        shipPlaced = board.placeShip(currentShip, [row, col], 0);
+      }
+      states.increaseShipsPlaced();
+    }
+  }
+  function renderAttackMessage(isHit) {
+    domQueries.attackMessageContainer.classList.remove("hidden");
+    if (isHit) {
+      domQueries.attackMessageContainer.classList.add("hit-message");
+      domQueries.attackMessage.textContent = "Hit!";
+    } else {
+      domQueries.attackMessageContainer.classList.add("miss-message");
+      domQueries.attackMessage.textContent = "Miss";
+    }
+  }
+  function endGame() {
+    domQueries.boardsContainer.classList.add("disabled");
+
+    const gameOverDisplay = document.createElement("modal");
+    gameOverDisplay.classList.add("game-over-display");
+    const headingContainer = document.createElement("div");
+    headingContainer.classList.add("game-over-heading-container");
+    const gameOverHeading = document.createElement("h1");
+    gameOverHeading.classList.add("game-over-heading");
+    gameOverHeading.textContent = "Game Over";
+    const newGameBtn = document.createElement("button");
+    newGameBtn.classList.add("play-again-button");
+    newGameBtn.textContent = "Play Again";
+    headingContainer.appendChild(gameOverHeading);
+    gameOverDisplay.appendChild(headingContainer);
+    gameOverDisplay.appendChild(newGameBtn);
+    domQueries.mainBody.appendChild(gameOverDisplay);
+    addEventListeners.addGameOverDisplayListeners();
   }
   return {
+    endGame,
+    renderAttackMessage,
+    renderMissedAttack,
+    renderExplosion,
     clearPage,
     createBoard,
     renderBoards,
@@ -375,6 +554,8 @@ const renderDOM = (function () {
     loadPlayerSelectionPage,
     loadGame,
     renderPlayerHeading,
+    updateAttackBoard,
+    randomizeShips,
   };
 })();
 
