@@ -4,6 +4,14 @@ import { Player } from "./player.js";
 import { Ship } from "./ship.js";
 import { GameBoard } from "./gameBoard.js";
 
+const checkWin = function (board) {
+  if (board.allShipsSunk()) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 const addEventListeners = (function () {
   function addGameEventListeners() {
     domQueries.ships.forEach((ship) => {
@@ -44,7 +52,11 @@ const addEventListeners = (function () {
 
           switch (states.getCurrentTurn()) {
             case "playerOne":
-              const playerOneShip = new Ship(shipType, parseInt(shipLength));
+              const playerOneShip = new Ship(
+                shipType,
+                parseInt(shipLength),
+                states.getRotateMode()
+              );
               const playerOneUnit = states.getUnitClicked();
               const playerOnePlacedShip = states
                 .getPlayerOneGameBoard()
@@ -52,11 +64,15 @@ const addEventListeners = (function () {
               if (playerOnePlacedShip) {
                 states.increaseShipsPlaced();
                 states.getDraggedPiece().classList.add("disabled");
-                renderDOM.updateBoard(states.getPlayerOneFleetBoard());
+                renderDOM.updateBoard(states.getPlayerOneFleetBoard(), null);
               }
               break;
             case "playerTwo":
-              const playerTwoShip = new Ship(shipType, parseInt(shipLength));
+              const playerTwoShip = new Ship(
+                shipType,
+                parseInt(shipLength),
+                states.getRotateMode()
+              );
               const playerTwoUnit = states.getUnitClicked();
               const playerTwoPlacedShip = states
                 .getPlayerTwoGameBoard()
@@ -64,7 +80,7 @@ const addEventListeners = (function () {
               if (playerTwoPlacedShip) {
                 states.increaseShipsPlaced();
                 states.getDraggedPiece().classList.add("disabled");
-                renderDOM.updateBoard(states.getPlayerTwoFleetBoard());
+                renderDOM.updateBoard(states.getPlayerTwoFleetBoard(), null);
               }
               break;
           }
@@ -115,11 +131,43 @@ const addEventListeners = (function () {
         }
       }
     });
+    domQueries.randomizeBtn.addEventListener("click", () => {
+      let board = null;
+      states.resetShipsPlaced();
+      if (states.getCurrentTurn() === "playerOne") {
+        board = states.getPlayerOneGameBoard();
+      } else {
+        board = states.getPlayerTwoGameBoard();
+      }
+      board.clearBoard();
+      renderDOM.randomizeShips(board);
+      renderDOM.updateBoard(board.board, null);
+      domQueries.ships.forEach((ship) => {
+        ship.classList.add("disabled");
+      });
+    });
+    domQueries.rotateBtn.addEventListener("click", () => {
+      const rotateMode =
+        states.getRotateMode() === "vertical" ? "horizontal" : "vertical";
+      states.setRotateMode(rotateMode);
+      const ships = domQueries.ships;
+      const shipStartUnits = domQueries.shipStartUnits;
+      const shipEndUnits = domQueries.shipEndUnits;
+
+      ships.forEach((ship) => {
+        ship.classList.toggle("rotate-ship");
+      });
+
+      shipStartUnits.forEach((unit) => {
+        unit.classList.toggle("rotated-ship-start-vertical");
+      });
+      shipEndUnits.forEach((unit) => {
+        unit.classList.toggle("rotated-ship-end-vertical");
+      });
+    });
   }
   function addMainMenuListeners() {
     const newGameBtn = domQueries.newGameBtn;
-    const rulesBtn = domQueries.rulesBtn;
-    const settingsBtn = domQueries.settingsBtn;
     newGameBtn.addEventListener("click", () => {
       renderDOM.clearPage();
       renderDOM.loadPlayerSelectionPage();
@@ -168,11 +216,115 @@ const addEventListeners = (function () {
       addGameEventListeners();
     });
   }
+  function addAttackBoardEventListeners() {
+    let gameOver = null;
+    const attackSquares = domQueries.attackSquares;
+    const playerOneGameBoard = states.getPlayerOneGameBoard();
+    const playerTwoGameBoard = states.getPlayerTwoGameBoard();
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        attackSquares[i][j].addEventListener("click", () => {
+          domQueries.attackBoardContainer.classList.add("temp-disabled");
+          const currentTurn = states.getCurrentTurn();
+          let board = null;
+          let isHit = null;
+          const row = attackSquares[i][j].getAttribute("data-row");
+          const col = attackSquares[i][j].getAttribute("data-col");
+
+          switch (currentTurn) {
+            case "playerOne":
+              isHit = playerTwoGameBoard.receiveAttack([row, col]);
+              renderDOM.updateAttackBoard(playerTwoGameBoard.missedAttacks);
+              if (isHit) {
+                console.log("rendering explosion");
+                renderDOM.renderExplosion(attackSquares[i][j]);
+                renderDOM.renderAttackMessage(true);
+                isHit = null;
+              } else {
+                renderDOM.renderMissedAttack(attackSquares[i][j]);
+                renderDOM.renderAttackMessage(false);
+              }
+              gameOver = checkWin(playerTwoGameBoard);
+              if (gameOver) {
+                renderDOM.endGame();
+              } else {
+                setTimeout(() => {
+                  states.setCurrentTurn("playerTwo");
+                  renderDOM.updateBoard(
+                    states.getPlayerTwoFleetBoard(),
+                    states.getPlayerTwoAttackBoard()
+                  );
+                  renderDOM.renderPlayerHeading();
+                  renderDOM.updateAttackBoard(states.getPlayerOneAttackBoard());
+                  domQueries.attackBoardContainer.classList.remove(
+                    "temp-disabled"
+                  );
+                  domQueries.attackMessageContainer.classList.remove(
+                    "miss-message"
+                  );
+                  domQueries.attackMessageContainer.classList.remove(
+                    "hit-message"
+                  );
+                  domQueries.attackMessageContainer.classList.add("hidden");
+                }, 2000);
+              }
+              break;
+            case "playerTwo":
+              isHit = playerOneGameBoard.receiveAttack([row, col]);
+              renderDOM.updateAttackBoard(playerOneGameBoard.missedAttacks);
+              if (isHit) {
+                renderDOM.renderExplosion(attackSquares[i][j]);
+                renderDOM.renderAttackMessage(true);
+                isHit = null;
+              } else {
+                renderDOM.renderMissedAttack(attackSquares[i][j]);
+                renderDOM.renderAttackMessage(false);
+              }
+              gameOver = checkWin(playerOneGameBoard);
+              if (gameOver) {
+                renderDOM.endGame();
+              } else {
+                setTimeout(() => {
+                  states.setCurrentTurn("playerOne");
+                  renderDOM.updateBoard(
+                    states.getPlayerOneFleetBoard(),
+                    states.getPlayerOneAttackBoard()
+                  );
+                  renderDOM.renderPlayerHeading();
+                  renderDOM.updateAttackBoard(states.getPlayerTwoAttackBoard());
+                  domQueries.attackBoardContainer.classList.remove(
+                    "temp-disabled"
+                  );
+                  domQueries.attackMessageContainer.classList.remove(
+                    "miss-message"
+                  );
+                  domQueries.attackMessageContainer.classList.remove(
+                    "hit-message"
+                  );
+                  domQueries.attackMessageContainer.classList.add("hidden");
+                }, 2000);
+              }
+              break;
+          }
+        });
+      }
+    }
+  }
+  function addGameOverDisplayListeners() {
+    domQueries.playAgainBtn.addEventListener("click", () => {
+      states.resetGame();
+      renderDOM.clearPage();
+      renderDOM.loadPlayerSelectionPage();
+      addSelectPlayerEventListeners();
+    });
+  }
   return {
     addGameEventListeners,
     addMainMenuListeners,
     addSelectPlayerEventListeners,
+    addAttackBoardEventListeners,
+    addGameOverDisplayListeners,
   };
 })();
 
-export { addEventListeners };
+export { checkWin, addEventListeners };
