@@ -235,15 +235,23 @@ const gameController = (function () {
   function switchTurn() {
     if (states.getCurrentTurn() === "playerOne") {
       states.setCurrentTurn("playerTwo");
-      renderDOM.updateBoard(
-        states.getPlayerTwoFleetBoard(),
-        states.getPlayerTwoAttackBoard()
-      );
+      if (states.getGameMode() !== "computer") {
+        renderDOM.updateBoard(
+          states.getPlayerTwoFleetBoard(),
+          states.getPlayerTwoAttackBoard()
+        );
+      } else {
+        renderDOM.clearBoard();
+      }
       renderDOM.renderPlayerHeading();
-      renderDOM.updateAttackBoard(states.getPlayerOneAttackBoard());
+      renderDOM.updateAttackBoard(
+        states.getPlayerOneFleetBoard(),
+        states.getPlayerOneAttackBoard()
+      );
       domQueries.attackBoardContainer.classList.remove("temp-disabled");
       domQueries.attackMessageContainer.classList.remove("miss-message");
       domQueries.attackMessageContainer.classList.remove("hit-message");
+      domQueries.attackMessageContainer.classList.remove("sunk-message");
       domQueries.attackMessageContainer.classList.add("hidden");
 
       if (states.getGameMode() === "computer") {
@@ -256,10 +264,14 @@ const gameController = (function () {
         states.getPlayerOneAttackBoard()
       );
       renderDOM.renderPlayerHeading();
-      renderDOM.updateAttackBoard(states.getPlayerTwoAttackBoard());
+      renderDOM.updateAttackBoard(
+        states.getPlayerTwoFleetBoard(),
+        states.getPlayerTwoAttackBoard()
+      );
       domQueries.attackBoardContainer.classList.remove("temp-disabled");
       domQueries.attackMessageContainer.classList.remove("miss-message");
       domQueries.attackMessageContainer.classList.remove("hit-message");
+      domQueries.attackMessageContainer.classList.remove("sunk-message");
       domQueries.attackMessageContainer.classList.add("hidden");
     }
   }
@@ -277,16 +289,23 @@ const gameController = (function () {
     switch (currentTurn) {
       case "playerOne":
         isHit = playerTwoGameBoard.receiveAttack([row, col]);
-        renderDOM.updateAttackBoard(playerTwoGameBoard.missedAttacks);
         if (isHit) {
           console.log("rendering explosion");
           renderDOM.renderExplosion(attackSquares[row][col]);
-          renderDOM.renderAttackMessage(true);
-          isHit = null;
+          if (checkShipSunk(playerTwoGameBoard.board, row, col) === true) {
+            renderDOM.renderAttackMessage("sunk");
+          } else {
+            renderDOM.renderAttackMessage(true);
+            isHit = null;
+          }
         } else {
           renderDOM.renderMissedAttack(attackSquares[row][col]);
           renderDOM.renderAttackMessage(false);
         }
+        renderDOM.updateAttackBoard(
+          playerTwoGameBoard.board,
+          playerTwoGameBoard.missedAttacks
+        );
         states.setGameOver(states.checkWin(playerTwoGameBoard));
         if (states.gameOver()) {
           endGame();
@@ -296,14 +315,21 @@ const gameController = (function () {
         break;
       case "playerTwo":
         isHit = playerOneGameBoard.receiveAttack([row, col]);
-        renderDOM.updateAttackBoard(playerOneGameBoard.missedAttacks);
+        renderDOM.updateAttackBoard(
+          playerOneGameBoard.board,
+          playerOneGameBoard.missedAttacks
+        );
         if (isHit) {
           if (states.getGameMode() === "computer") {
             states.setComputerHits([parseInt(row, 10), parseInt(col, 10)]);
           }
           renderDOM.renderExplosion(attackSquares[row][col]);
-          renderDOM.renderAttackMessage(true);
-          isHit = null;
+          if (checkShipSunk(playerOneGameBoard.board, row, col)) {
+            renderDOM.renderAttackMessage("sunk");
+          } else {
+            renderDOM.renderAttackMessage(true);
+            isHit = null;
+          }
         } else {
           renderDOM.renderMissedAttack(attackSquares[row][col]);
           renderDOM.renderAttackMessage(false);
@@ -325,9 +351,11 @@ const gameController = (function () {
 
     let attackRow = null;
     let attackCol = null;
+    let firstHitRow = null;
+    let firstHitCol = null;
 
     if (computerHits !== null && computerHits.length > 0) {
-      let [firstHitRow, firstHitCol] = computerHits[0].map((coord) =>
+      [firstHitRow, firstHitCol] = computerHits[0].map((coord) =>
         parseInt(coord, 10)
       );
       let lastHitIndex = computerHits.length - 1;
@@ -400,7 +428,13 @@ const gameController = (function () {
       }
     }
 
-    if (attackRow === null || attackCol === null) {
+    if (
+      attackRow === null ||
+      attackCol === null ||
+      (firstHitRow !== null &&
+        firstHitCol !== null &&
+        fleetBoard[firstHitRow][firstHitCol].isSunk())
+    ) {
       do {
         attackRow = Math.floor(Math.random() * 10);
         attackCol = Math.floor(Math.random() * 10);
@@ -410,6 +444,13 @@ const gameController = (function () {
 
     const event = new Event("click", { bubbles: true, cancelable: true });
     attackSquares[attackRow][attackCol].dispatchEvent(event);
+  }
+  function checkShipSunk(board, row, col) {
+    console.log(board);
+    if (board[row][col].isSunk()) {
+      return true;
+    }
+    return false;
   }
   return {
     selectGameMode,
@@ -425,6 +466,7 @@ const gameController = (function () {
     switchTurn,
     placeAttack,
     placeComputerAttack,
+    checkShipSunk,
   };
 })();
 export { gameController };

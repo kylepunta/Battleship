@@ -133,9 +133,11 @@ const renderDOM = (function () {
     if (currentTurn === "playerOne") {
       playerHeading.textContent = "Player One";
     } else if (currentTurn === "playerTwo") {
-      playerHeading.textContent = "Player Two";
-    } else if (states.getGameMode() === "computer") {
-      playerHeading.textContent = "Computer";
+      if (states.getGameMode() === "computer") {
+        playerHeading.textContent = "Computer";
+      } else {
+        playerHeading.textContent = "Player Two";
+      }
     }
     domQueries.boardNameHeading.innerHTML = "";
     domQueries.boardNameHeading.appendChild(playerHeading);
@@ -443,7 +445,7 @@ const renderDOM = (function () {
       square.classList.remove("miss-animation");
     }, 1000);
   }
-  function updateAttackBoard(board) {
+  function updateAttackBoard(fleetBoard, attackBoard) {
     const attackSquares = domQueries.attackSquares;
 
     for (let i = 0; i < 10; i++) {
@@ -451,24 +453,33 @@ const renderDOM = (function () {
         attackSquares[i][j].classList.remove("hit");
         attackSquares[i][j].classList.remove("miss");
         attackSquares[i][j].classList.remove("temp-disabled");
-        if (board[i][j] === true) {
-          attackSquares[i][j].classList.add("hit");
-          attackSquares[i][j].classList.add("temp-disabled");
-        } else if (board[i][j] === false) {
+        attackSquares[i][j].classList.remove("ship-sunk");
+        if (attackBoard[i][j] === true) {
+          if (fleetBoard[i][j].isSunk()) {
+            attackSquares[i][j].classList.add("ship-sunk");
+            attackSquares[i][j].classList.add("temp-disabled");
+          } else {
+            attackSquares[i][j].classList.add("hit");
+            attackSquares[i][j].classList.add("temp-disabled");
+          }
+        } else if (attackBoard[i][j] === false) {
           attackSquares[i][j].classList.add("miss");
           attackSquares[i][j].classList.add("temp-disabled");
         }
       }
     }
   }
-  function renderAttackMessage(isHit) {
+  function renderAttackMessage(message) {
     domQueries.attackMessageContainer.classList.remove("hidden");
-    if (isHit) {
+    if (message === true) {
       domQueries.attackMessageContainer.classList.add("hit-message");
       domQueries.attackMessage.textContent = "Hit!";
-    } else {
+    } else if (message === false) {
       domQueries.attackMessageContainer.classList.add("miss-message");
       domQueries.attackMessage.textContent = "Miss";
+    } else if (message === "sunk") {
+      domQueries.attackMessageContainer.classList.add("sunk-message");
+      domQueries.attackMessage.textContent = "Ship Sunk!";
     }
   }
   function endGame() {

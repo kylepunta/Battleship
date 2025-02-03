@@ -463,6 +463,10 @@ main {
     background-color: #eee;
 }
 
+.ship-sunk {
+    background-color: #700;
+}
+
 .temp-disabled {
     pointer-events: none;
 }
@@ -512,6 +516,12 @@ main {
     color: #00308c;
     border: 2px solid #6b91ff;
     background-color: #afcbff;
+}
+
+.sunk-message {
+    color: #700;
+    background-color: rgb(255, 238, 238);
+    border: 2px solid #700;
 }
 
 .board-name-heading {
