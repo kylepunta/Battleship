@@ -61,6 +61,22 @@ const states = (() => {
     getShipsPlaced: () => domState.shipsPlaced,
     increaseShipsPlaced: () => domState.shipsPlaced++,
     resetShipsPlaced: () => (domState.shipsPlaced = 0),
+    resetGame: () => {
+      domState.droppedPiece = null;
+      domState.draggedPiece = null;
+      domState.rotateMode = "vertical";
+      domState.unitClicked = null;
+      domState.shipsPlaced = 0;
+      gameState.playerOne = null;
+      gameState.playerTwo = null;
+      gameState.playerOneGameBoard = null;
+      gameState.playerTwoGameBoard = null;
+      gameState.playerOneFleetBoard = null;
+      gameState.playerTwoFleetBoard = null;
+      gameState.currentTurn = "playerOne";
+      gameState.playerOneReady = false;
+      gameState.playerTwoReady = false;
+    },
   };
 })();
 
