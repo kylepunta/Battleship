@@ -1,10 +1,11 @@
 class Ship {
-  constructor(type, length) {
+  constructor(type, length, direction) {
     if (length > 5) length = 5;
     if (length < 2) length = 2;
     this._type = type;
     this._length = length;
     this._numberOfHits = 0;
+    this._direction = direction;
   }
 
   get type() {
@@ -25,6 +26,14 @@ class Ship {
 
   get numberOfHits() {
     return this._numberOfHits;
+  }
+
+  get direction() {
+    return this._direction;
+  }
+
+  set direction(direction) {
+    this._direction = direction;
   }
 
   hit() {
