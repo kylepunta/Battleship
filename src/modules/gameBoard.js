@@ -8,7 +8,7 @@ class GameBoard {
       .map(() => Array(10).fill(null));
     this._missedAttacks = Array(10)
       .fill()
-      .map(() => Array(10).fill(false));
+      .map(() => Array(10).fill(null));
     this._ships = 0;
     this._sunkShips = 0;
   }
@@ -33,7 +33,7 @@ class GameBoard {
     console.log("placing ship...");
     console.log("Row", row);
     console.log("Col", col);
-    if (states.getRotateMode() === "vertical") {
+    if (ship.direction === "vertical") {
       switch (unit) {
         case 0:
           if (ship.length - 1 + row <= 9) {
@@ -101,6 +101,74 @@ class GameBoard {
           }
           break;
       }
+    } else if (ship.direction === "horizontal") {
+      switch (unit) {
+        case 0:
+          if (ship.length - 1 + col <= 9) {
+            for (let i = col; i < col + ship.length; i++) {
+              if (this._board[row][i] !== null) {
+                return false;
+              }
+            }
+            for (let i = col; i < col + ship.length; i++) {
+              this._board[row][i] = ship;
+            }
+            return true;
+          }
+          break;
+        case 1:
+          if (col > 0 && col + ship.length - 2 <= 9) {
+            for (let i = col - unit; i < col - 1 + ship.length; i++) {
+              if (this._board[row][i] !== null) {
+                return false;
+              }
+            }
+            for (let i = col - unit; i < col - 1 + ship.length; i++) {
+              this._board[row][i] = ship;
+            }
+            return true;
+          }
+          break;
+        case 2:
+          if (col > 1 && col + ship.length - 3 <= 9) {
+            for (let i = col - unit; i < col - 2 + ship.length; i++) {
+              if (this._board[row][i] !== null) {
+                return false;
+              }
+            }
+            for (let i = col - unit; i < col - 2 + ship.length; i++) {
+              this._board[row][i] = ship;
+            }
+            return true;
+          }
+          break;
+        case 3:
+          if (col > 2 && col + ship.length - 4 <= 9) {
+            for (let i = col - unit; i < col - 3 + ship.length; i++) {
+              if (this._board[row][i] !== null) {
+                return false;
+              }
+            }
+            for (let i = col - unit; i < col - 3 + ship.length; i++) {
+              this._board[row][i] = ship;
+            }
+            return true;
+          }
+          break;
+        case 4:
+          if (col - (ship.length - 1) >= 0) {
+            for (let i = col; i > col - ship.length; i--) {
+              if (this._board[row][i] !== null) {
+                return false;
+              }
+            }
+            for (let i = col; i > col - ship.length; i--) {
+              this._board[row][i] = ship;
+            }
+            return true;
+          }
+          break;
+      }
     }
     return false;
   }
@@ -109,9 +177,18 @@ class GameBoard {
     if (this._board[i][j] !== null) {
       const ship = this._board[i][j];
       ship.hit();
+      this._missedAttacks[i][j] = true;
+      console.log(
+        `Ship was hit at coordinates ${i} ${j}`,
+        this._missedAttacks[i][j]
+      );
       return true;
     } else {
-      this._missedAttacks[i][j] = true;
+      this._missedAttacks[i][j] = false;
+      console.log(
+        `No ship at coordinates ${i} ${j}`,
+        this._missedAttacks[i][j]
+      );
       return false;
     }
   }
