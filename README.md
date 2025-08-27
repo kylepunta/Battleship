@@ -23,7 +23,12 @@ A browser-based implementation of the classic **Battleship** game built with **H
 
 ## Screenshots
 
-![Battleship game screenshot](images/battleship.png)
+![Battleship game screenshot](images/Screenshot-1.png)
+![Battleship game screenshot](images/Screenshot-2.png)
+![Battleship game screenshot](images/Screenshot-3.png)
+![Battleship game screenshot](images/Screenshot-4.png)
+![Battleship game screenshot](images/Screenshot-5.png)
+![Battleship game screenshot](images/Screenshot-6.png)
 
 ## How to Play
 
